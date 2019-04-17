@@ -42,6 +42,7 @@ def on_message(client, userdata, msg):
         os.makedirs(os.path.join(file_path + split_topic[3]))
     path = file_path + split_topic[3] + '/' + now_time
     fi = open(path + ".txt", 'w')
+
     ##로컬에 데이터 파일 저장
     delete_text = []
     test_data2 = mqtt_data.split('status":"')
@@ -52,12 +53,14 @@ def on_message(client, userdata, msg):
         fi.write(delete_text[i])
         fi.write("\n")
     fi.close()
+
     ##만약 해당 IMEI폴더가 없다면 생성
     if (split_topic[3] in folder_dic) == False:
         file_metadata = {'name': split_topic[3], 'mimeType': 'application/vnd.google-apps.folder', 'parents': [folder_dic[today][0]]}
         file = google_drive.files().create(body=file_metadata, fields='id, parents').execute()
         folder_dic[split_topic[3]] = [file.get('id'), file.get('parents')]
         print('make folder...\nfolder_name : ', split_topic[3] + '\nid : ', folder_dic[split_topic[3]][0] + '\nparents : ', folder_dic[split_topic[3]][1])
+
     ##생성된 데이터 파일을 google drive에 업로드
     FILES = ((path + '.txt'),)
     for file_title in FILES:
