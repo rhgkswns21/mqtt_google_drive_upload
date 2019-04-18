@@ -21,7 +21,6 @@ broker = f.readline()
 mqtt_topic = f.readline()
 file_path = f.readline().strip()
 f.close()
-print('git_test')
 
 # 클라이언트가 서버에게서 CONNACK 응답을 받을 때 호출되는 콜백
 def on_connect(client, userdata, rc):
