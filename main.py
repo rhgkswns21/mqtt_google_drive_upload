@@ -55,17 +55,20 @@ def on_message(client, userdata, msg):
     fi.close()
 
     ##만약 해당 IMEI폴더가 없다면 생성
-    if (split_topic[3] in folder_dic) == False:
-        file_metadata = {'name': split_topic[3], 'mimeType': 'application/vnd.google-apps.folder', 'parents': [folder_dic[today][0]]}
+    if (split_topic[3]+today in folder_dic) == False:
+        print('make IMEI Folder..')
+        file_metadata = {'name': split_topic[3], 'mimeType': 'application/vnd.google-apps.folder', 'parents': [folder_dic[today+str(None)][0]], 'description': today}
+        print('1step...')
         file = google_drive.files().create(body=file_metadata, fields='id, parents').execute()
-        folder_dic[split_topic[3]] = [file.get('id'), file.get('parents')]
-        print('make folder...\nfolder_name : ', split_topic[3] + '\nid : ', folder_dic[split_topic[3]][0] + '\nparents : ', folder_dic[split_topic[3]][1])
+        print('2step...')
+        folder_dic[split_topic[3]+today] = [file.get('id'), file.get('parents')]
+        # print('make folder...\nfolder_name : ', split_topic[3] + '\nid : ', folder_dic[split_topic[3]+today][0] + '\nparents : ', folder_dic[split_topic[3]+today][1] + '\ndescription : ', file.get('description'))
 
     ##생성된 데이터 파일을 google drive에 업로드
     FILES = ((path + '.txt'),)
     for file_title in FILES:
         file_name = file_title
-        metadata = {'name': now_time2+'.txt', 'mimeType': None, 'parents': [folder_dic[split_topic[3]][0]]}
+        metadata = {'name': now_time2+'.txt', 'mimeType': None, 'parents': [folder_dic[split_topic[3]+today][0]]}
         res = google_drive.files().create(body=metadata, media_body=file_name).execute()
         if res:
             print('Uploaded "%s" (%s)' % (file_name, res['mimeType']))
@@ -79,24 +82,24 @@ page_token = None
 RSP = google_drive.files().list(
                         q="mimeType='application/vnd.google-apps.folder'",
                         spaces='drive',
-                        fields='nextPageToken, files(id, name, parents)',
+                        fields='nextPageToken, files(id, name, parents, description)',
                         pageToken=page_token).execute()
 
 ##검색된 폴더 이름, ID 출력 및 폴더 이름을 키로 가진 딕셔너리 생성. ##Create a Dictionary with the Folder Name as Key
 for file in RSP.get('files', []):
     # Process change
-    folder_dic[file.get('name')] = [file.get('id'), file.get('parents')]
-    print("Key : " , file.get('name') + "\nid : ", folder_dic[file.get('name')][0] + "\nparents : ", folder_dic[file.get('name')][1])
+    folder_dic[file.get('name') + str(file.get('description'))] = [file.get('id'), file.get('parents')]
+    print("Key : ", file.get('name') + "\nid : ", folder_dic[file.get('name')+str(file.get('description'))][0] + "\nparents : ", folder_dic[file.get('name')+str(file.get('description'))][1])
 page_token = RSP.get('nextPageToken', None)
 
 ##google_drive에 MQTT_data 폴더가 없으면 생성 ##if google drive is haven't MQTT_data folder.make MQTT_data folder
-if ('MQTT_data' in folder_dic) == False:
+if ('MQTT_data'+str(None) in folder_dic) == False:
     file_metadata = {'name': 'MQTT_data', 'mimeType': 'application/vnd.google-apps.folder'}
     file = google_drive.files().create(body=file_metadata, fields='id, parents').execute()
     folder_dic['MQTT_data'] = [file.get('id'), file.get('parents')]
     print('make folder...\nfolder_name : MQTT_data\nid : ', folder_dic['MQTT_data'][0] + '\nparents : ', folder_dic['MQTT_data'][1])
 
-if (today in folder_dic) == False:
+if (today+str(None) in folder_dic) == False:
     file_metadata = {'name': today, 'mimeType': 'application/vnd.google-apps.folder', 'parents': [folder_dic['MQTT_data'][0]]}
     file = google_drive.files().create(body=file_metadata, fields='id, parents').execute()
     folder_dic[today] = [file.get('id'), file.get('parents')]
