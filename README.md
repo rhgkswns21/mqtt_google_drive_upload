@@ -9,7 +9,7 @@ MQTT Broker에 접속하여 특정 Topic을 Subscribe.
 - Google Drive Info
     - API Key
 
-#사용법
+# 사용법
 1. 아래 변수에 google drive API Key의 file path를 넣어준다.
     ```python
     store = file.Storage('storage.json Path')

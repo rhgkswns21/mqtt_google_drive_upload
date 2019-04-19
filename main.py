@@ -102,8 +102,8 @@ if ('MQTT_data'+str(None) in folder_dic) == False:
 if (today+str(None) in folder_dic) == False:
     file_metadata = {'name': today, 'mimeType': 'application/vnd.google-apps.folder', 'parents': [folder_dic['MQTT_data'+str(None)][0]]}
     file = google_drive.files().create(body=file_metadata, fields='id, parents').execute()
-    folder_dic[today] = [file.get('id'), file.get('parents')]
-    print('make folder...\nfolder_name : ', today + '\nid : ', folder_dic[today][0] + '\nparents : ', folder_dic[today][1])
+    folder_dic[today+str(None)] = [file.get('id'), file.get('parents')]
+    print('make folder...\nfolder_name : ', today + '\nid : ', folder_dic[today+str(None)][0] + '\nparents : ', folder_dic[today+str(None)][1])
 
 
 client = mqtt.Client()        # MQTT Client 오브젝트 생성
