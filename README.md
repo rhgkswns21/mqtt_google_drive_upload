@@ -12,7 +12,9 @@ MQTT Broker에 접속하여 특정 Topic을 Subscribe.
 #사용법
 1. 아래 변수에 google drive API Key의 file path를 넣어준다.
     ```python
-    store = file.Storage('file path')
+    store = file.Storage('storage.json Path')
+    flow = client.flow_from_clientsecrets('client_secret_drive.json Path', SCOPES)
+ 
     ```
 2. Broker, Topic, mqtt_message 저장 폴더를 지정.
     ```
