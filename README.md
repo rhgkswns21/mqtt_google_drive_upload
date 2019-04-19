@@ -1,5 +1,5 @@
 # 기능
-MQTT Broker에 접속하여 특정 Topic을 Subscribe.
+MQTT Broker에 접속하여 특정 Topic을 Subscribe.  
 구글 드라이브에 접속하여 폴더 검색, 파일 업로드.
 
 # 사전 준비
