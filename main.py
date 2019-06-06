@@ -45,9 +45,10 @@ def on_message(client, userdata, msg):
 
     ##로컬에 데이터 파일 저장
     delete_text = []
-    test_data2 = mqtt_data.split('status":"')
+    test_data2 = mqtt_data.split('"accelerometer":"')
     test_data3 = test_data2[1].split('"}')
     split_test = test_data3[0].split('n')
+
     for i in range(0, len(split_test)-1):
         delete_text.append(split_test[i].rstrip('\\').rstrip('r').rstrip('\\'))
         fi.write(delete_text[i])
