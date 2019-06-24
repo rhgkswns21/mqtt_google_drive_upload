@@ -114,4 +114,6 @@ client.connect(broker.strip())   # MQTT 서버에 연결
 
 client.subscribe(mqtt_topic.strip())
 
+print("TEST")
+
 client.loop_forever()
