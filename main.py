@@ -5,6 +5,9 @@ import datetime as date
 import paho.mqtt.client as mqtt
 import os
 
+log = 'log'
+logflag = False
+
 SCOPES = 'https://www.googleapis.com/auth/drive.file'
 store = file.Storage('E:\MyFolder\Source\Python\PycharmProjects\External Data\google_drive_key\storage.json')
 creds = store.get()
@@ -35,19 +38,37 @@ def on_message(client, userdata, msg):
     mqtt_data = str(msg.payload)
     split_topic = str(msg.topic).split('/')
 
+    print(mqtt_data)
+    print(split_topic)
+    if(mqtt_data.find('"LOG"')):
+        logflag = True
+    else:
+        logflag = False
+
     now_time = date.datetime.now().strftime('%Y%m%d%H%M%S')
     now_time2 = date.datetime.now().strftime('%H%M%S')
     ##로컬에 폴더 생성
     if not (os.path.isdir(file_path + split_topic[3])):
         os.makedirs(os.path.join(file_path + split_topic[3]))
-    path = file_path + split_topic[3] + '/' + now_time
+    if(logflag == False):
+        path = file_path + split_topic[3] + '/' + now_time
+    else:
+        path = file_path + split_topic[3] + '/' + now_time + log
     fi = open(path + ".txt", 'w')
 
     ##로컬에 데이터 파일 저장
     delete_text = []
-    test_data2 = mqtt_data.split('"accelerometer":"')
-    test_data3 = test_data2[1].split('"}')
-    split_test = test_data3[0].split('n')
+    if(logflag == False):
+        test_data2 = mqtt_data.split('"accelerometer":"')
+        test_data3 = test_data2[1].split('"}')
+        split_test = test_data3[0].split('n')
+    else:
+        test_data2 = mqtt_data.split('"status" : "')
+        print(test_data2)
+        test_data3 = test_data2[1].split('"location"')
+        print(test_data3)
+        split_test = test_data3[0].split('\\\\n')
+        print(split_test)
 
     for i in range(0, len(split_test)-1):
         delete_text.append(split_test[i].rstrip('\\').rstrip('r').rstrip('\\'))
@@ -69,7 +90,10 @@ def on_message(client, userdata, msg):
     FILES = ((path + '.txt'),)
     for file_title in FILES:
         file_name = file_title
-        metadata = {'name': now_time2+'.txt', 'mimeType': None, 'parents': [folder_dic[split_topic[3]+today][0]]}
+        if(logflag == False):
+            metadata = {'name': now_time2+'.txt', 'mimeType': None, 'parents': [folder_dic[split_topic[3]+today][0]]}
+        else:
+            metadata = {'name': log + now_time2 + '.txt', 'mimeType': None, 'parents': [folder_dic[split_topic[3] + today][0]]}
         res = google_drive.files().create(body=metadata, media_body=file_name).execute()
         if res:
             print('Uploaded "%s" (%s)' % (file_name, res['mimeType']))
@@ -113,7 +137,5 @@ client.on_message = on_message   # on_message callback 설정
 client.connect(broker.strip())   # MQTT 서버에 연결
 
 client.subscribe(mqtt_topic.strip())
-
-print("TEST")
 
 client.loop_forever()
