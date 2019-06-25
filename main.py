@@ -63,7 +63,7 @@ def on_message(client, userdata, msg):
         test_data3 = test_data2[1].split('"}')
         split_test = test_data3[0].split('n')
     else:
-        test_data2 = mqtt_data.split('"status" : "')
+        test_data2 = mqtt_data.split('"status":"')
         print(test_data2)
         test_data3 = test_data2[1].split('"location"')
         print(test_data3)
