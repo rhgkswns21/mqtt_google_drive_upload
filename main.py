@@ -40,10 +40,11 @@ def on_message(client, userdata, msg):
 
     print(mqtt_data)
     print(split_topic)
-    if(mqtt_data.find('"LOG"')):
+    if(mqtt_data.find('"LOG"') >= 0):
         logflag = True
     else:
         logflag = False
+    print(logflag)
 
     now_time = date.datetime.now().strftime('%Y%m%d%H%M%S')
     now_time2 = date.datetime.now().strftime('%H%M%S')
@@ -60,8 +61,11 @@ def on_message(client, userdata, msg):
     delete_text = []
     if(logflag == False):
         test_data2 = mqtt_data.split('"accelerometer":"')
+        print(test_data2)
         test_data3 = test_data2[1].split('"}')
+        print(test_data3)
         split_test = test_data3[0].split('n')
+        print(split_test)
     else:
         test_data2 = mqtt_data.split('"status":"')
         print(test_data2)
